@@ -1,0 +1,32 @@
+#!/usr/bin/env python3.10
+from coordinates import get_coordinates
+from geo import get_city
+from weather_api_service import get_weather
+from weather_formatter import format_weather
+from exceptions import ApiServiceError, CantGetCoordinates, GeoServiceError
+
+
+def main():
+    try:
+        coordinates = get_coordinates()
+    except CantGetCoordinates:
+        print("Cannot get GPS coordinates")
+        exit(1)
+
+    try:
+        city = get_city(coordinates)
+    except GeoServiceError:
+        print("Cannot determine current city")
+        exit(1)
+
+    try:
+        weather = get_weather(coordinates, city)
+    except ApiServiceError:
+        print(f"Cannot get weather by coordinates {coordinates}")
+        exit(1)
+
+    print(format_weather(weather))
+
+
+if __name__ == "__main__":
+    main()
